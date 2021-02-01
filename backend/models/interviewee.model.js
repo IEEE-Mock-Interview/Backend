@@ -2,19 +2,18 @@ const sequelize = require('../database/connection');
 const {DataTypes} = require('sequelize')
 
 
-const User = sequelize.define(
-	'User',
+const Interviewee = sequelize.define(
+	'Interviewee',
 	{
-		id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+		intervieweeID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 		name: DataTypes.TEXT,
 		email:{ type:DataTypes.TEXT, unique:true},
-		password: DataTypes.TEXT,
-		role: DataTypes.TEXT,
+		cv: DataTypes.TEXT,
         contactNo: DataTypes.TEXT,
-        img: DataTypes.TEXT
+        intervieweeImg: DataTypes.TEXT
 	},
 	{ freezeTableName: true, timestamps: false }
 );
 
 
-module.exports = User;
+module.exports = Interviewee;
