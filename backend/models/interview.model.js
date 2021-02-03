@@ -1,5 +1,6 @@
 const sequelize = require('../database/connection');
-const {DataTypes} = require('sequelize')
+const {DataTypes} = require('sequelize');
+const Interviewee = require('./interviewee.model');
 
 
 const Interview = sequelize.define(
@@ -18,6 +19,8 @@ const Interview = sequelize.define(
 	},
 	{ freezeTableName: true, timestamps: false }
 );
+
+Interview.belongsTo(Interviewee,{foreignKey:"intervieweeID"})
 
 
 module.exports = Interview;

@@ -1,0 +1,29 @@
+###
+GET http://localhost:3000/users
+
+###
+POST  http://localhost:3000/users
+Content-Type: application/json
+
+ {
+        "name": "Tim paine",
+        "email": "tim@gmail.com",
+        "role": "volunteer",
+        "contactNo": "0766435538",
+        "img": "None"
+}
+
+###
+PUT http://localhost:3000/users/3
+Content-Type: application/json
+
+ {
+        "name": "Poorna Gunathilaka",
+        "email": "poorna2152@gmail.com",
+        "role": "admin",
+        "contactNo": "0766435538",
+        "img": "None"
+}
+
+###
+DELETE  http://localhost:3000/users/19

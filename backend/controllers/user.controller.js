@@ -1,7 +1,7 @@
 const User = require('../models/user.model')
 const bcrypt = require('bcrypt');
 var generator = require('generate-password');
-// const { converter } = require('../services/objectConverter');
+const converter = require('../util/converter')
 
 /**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}> 
@@ -10,7 +10,7 @@ exports.getUsers = async (req, res) => {
 	let users = [];
 	try {
 		users = await User.findAll({ attributes: { exclude: 'password' } });
-		// users = users.map(item => converter(item.dataValues))
+		users = users.map(item => converter(item.dataValues))
 		return res.status(200).send(users);
 	} catch (e) {
 		return res.status(400).send(e.message);
@@ -32,7 +32,7 @@ exports.createUser = async (req, res) => {
 		let salt = await bcrypt.genSalt(10);
 		user.password = await bcrypt.hash(password, salt);
 		user = await User.create(user);
-		// user = converter(user.dataValues);
+		user = converter(user.dataValues);
 		// sendMail("SLF New User Password",password,user.email)
 		return res
 			.status(200)
@@ -53,7 +53,7 @@ exports.updateUser = async (req, res) => {
 	try {
 		user = await User.update({ ...req.body}, { where: { id: req.params.userId }, returning: true });
 		user = await User.findOne({ attributes:{exclude:'password'},where: { id: req.params.userId }});
-		// user = converter(user.dataValues)
+		user = converter(user.dataValues)
 		return res.status(200).send(user);
 	} catch (e) {
 		return res.status(400).send(e.message);

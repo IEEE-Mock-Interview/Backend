@@ -1,5 +1,5 @@
 const Interviewee = require("../models/interviewee.model");
-// const { converter } = require('../services/objectConverter');
+const converter = require('../util/converter')
 
 /**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
@@ -8,7 +8,7 @@ exports.getInterviewees = async (req, res) => {
   let interviewees = [];
   try {
     interviewees = await Interviewee.findAll();
-    // Interviewees = Interviewees.map(item => converter(item.dataValues))
+    interviewees = interviewees.map(item => converter(item.dataValues))
     return res.status(200).send(interviewees);
   } catch (e) {
     return res.status(400).send(e.message);
@@ -23,8 +23,7 @@ exports.createInterviewee = async (req, res) => {
   let interviewee = req.body;
   try {
     interviewee = await Interviewee.create(req.body);
-    // Interviewee = converter(Interviewee.dataValues);
-    // sendMail("SLF New Interviewee Password",password,Interviewee.email)
+    interviewee = converter(interviewee.dataValues);
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send({ status: 400, message: e.message });
@@ -46,7 +45,7 @@ exports.updateInterviewee = async (req, res) => {
     interviewee = await Interviewee.findOne({
       where: { intervieweeID: req.params.intervieweeId },
     });
-    // Interviewee = converter(Interviewee.dataValues)
+    interviewee = converter(interviewee.dataValues)
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send(e.message);

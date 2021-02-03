@@ -8,11 +8,6 @@ const router = express.Router();
 router.get('/', CompanyController.getCompanies);
 
 /**
- * @description get all companies
- */
-router.get('/:companyId', CompanyController.getCompany);
-
-/**
 
 /**
  * @description update company

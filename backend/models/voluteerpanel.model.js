@@ -1,9 +1,9 @@
 const sequelize = require('../database/connection');
 const {DataTypes} = require('sequelize')
+const Panel = require('./panel.model')
 
-
-const PanelVolunteer = sequelize.define(
-	'PanelVolunteer',
+const VolunteerPanel = sequelize.define(
+	'VolunteerPanel',
 	{
 		panelID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 		volunteerID: {type:DataTypes.TEXT, primaryKey:true}
@@ -11,5 +11,5 @@ const PanelVolunteer = sequelize.define(
 	{ freezeTableName: true, timestamps: false }
 );
 
-
-module.exports = PanelVolunteer;
+VolunteerPanel.belongsTo(Panel,{foreignKey:"panelID"})
+module.exports = VolunteerPanel;

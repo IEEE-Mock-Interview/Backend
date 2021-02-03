@@ -1,7 +1,7 @@
 const Company = require('../models/company.model');
 const Panel = require('../models/panel.model');
 const User = require('../models/user.model');
-// const { converter } = require('../services/objectConverter');
+const converter = require('../util/converter')
 
 /**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}> 
@@ -10,22 +10,8 @@ exports.getCompanies = async (req, res) => {
 	let companies = [];
 	try {
 		companies = await Company.findAll();
-		// Companys = Companys.map(item => converter(item.dataValues))
+		companies = companies.map(item => converter(item.dataValues))
 		return res.status(200).send(companies);
-	} catch (e) {
-		return res.status(400).send(e.message);
-	}
-};
-
-/**
- *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}> 
- */
-exports.getCompany = async (req, res) => {
-	let panels = [];
-	try {
-		panels = await Panel.findAll({where:{companyID:req.params.companyId}, include:{model:User}});
-		// Companys = Companys.map(item => converter(item.dataValues))
-		return res.status(200).send(panels);
 	} catch (e) {
 		return res.status(400).send(e.message);
 	}
@@ -39,7 +25,7 @@ exports.createCompany = async (req, res) => {
 	let company = req.body;
 	try {
 		company = await Company.create({...req.body});
-		// Company = converter(Company.dataValues);
+		company = converter(company.dataValues);
 		return res
 			.status(200)
 			.send(company);
@@ -59,7 +45,7 @@ exports.updateCompany = async (req, res) => {
 	try {
 		company = await Company.update({ ...req.body}, { where: { companyID: req.params.companyId }, returning: true });
 		company = await Company.findOne({where: { companyID: req.params.companyId }});
-		// Company = converter(Company.dataValues)
+		company = converter(company.dataValues)
 		return res.status(200).send(company);
 	} catch (e) {
 		return res.status(400).send(e.message);

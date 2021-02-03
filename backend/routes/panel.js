@@ -29,6 +29,10 @@ router.delete('/:panelId', PanelController.deletePanel);
  */
 // router.post('/changePassword/:userId', UserController.changePassword);
 
+/**
+ * @description get the panels assigned to a volunteer
+ */
+router.get('/volunteer/:volunteerID', PanelController.getVolunteerPanels);
 
 router.all('*', (req, res) => {
 	res.status(404).json({ status: 404, message: 'Not found' });

@@ -25,7 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 app.use('/', indexRouter);
-app.use(authenticate.verifyUser)
+// app.use(authenticate.verifyUser)
 app.use('/users', usersRouter);
 app.use('/company', companyRouter);
 app.use('/panel', panelRouter);

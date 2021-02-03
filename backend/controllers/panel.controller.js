@@ -1,12 +1,13 @@
 const Panel = require("../models/panel.model");
 const User = require("../models/user.model");
 const sequelize = require("../database/connection");
-const PanelVolunteer = require("../models/panelvoluteer.model");
+const VolunteerPanel = require("../models/voluteerpanel.model");
 const bcrypt = require("bcrypt");
 var generator = require("generate-password");
-// const { converter } = require('../services/objectConverter');
+const converter = require("../util/converter");
 
 /**
+ * make this to get volunteer details also
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
  */
 exports.getPanels = async (req, res) => {
@@ -14,9 +15,26 @@ exports.getPanels = async (req, res) => {
   try {
     panels = await Panel.findAll({
       where: { companyID: req.params.companyId },
-      include: { model: User },
+      include: { model: User, attributes: { exclude: ["password"] } },
     });
-    // Panels = Panels.map(item => converter(item.dataValues))
+    panels = panels.map((item) => converter(item.dataValues));
+    return res.status(200).send(panels);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
+};
+
+/**
+ *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
+ */
+exports.getVolunteerPanels = async (req, res) => {
+  let panels = [];
+  try {
+    panels = await VolunteerPanel.findAll({
+      where: { volunteerID: req.params.volunteerID },
+      include: { model: Panel, include: { model: User } },
+    });
+    panels = panels.map((item) => converter(item.dataValues));
     return res.status(200).send(panels);
   } catch (e) {
     return res.status(400).send(e.message);
@@ -31,9 +49,10 @@ exports.createPanel = async (req, res) => {
   let panel = {};
   let user = req.body;
   let volunteer = [];
+  let password = "";
   let t = await sequelize.transaction();
   try {
-    let password = generator.generate({
+    password = generator.generate({
       length: 10,
       numbers: true,
     });
@@ -42,18 +61,22 @@ exports.createPanel = async (req, res) => {
     user.password = await bcrypt.hash(password, salt);
     user = await User.create({ ...user, role: "Panel" }, { transaction: t });
     let id = user.id;
-    console.log(user.id);
     panel = await Panel.create({ ...req.body, userID: id }, { transaction: t });
     if (req.body.hasOwnProperty("Volunteer")) {
       req.body.Volunteer = req.body.Volunteer.map((item) => {
         return { ...item, panelID: panel.panelID };
       });
-      volunteer = await PanelVolunteer.bulkCreate(req.body.Volunteer, {
+      volunteer = await VolunteerPanel.bulkCreate(req.body.Volunteer, {
         transaction: t,
       });
     }
     await t.commit();
-    // Panel = converter(Panel.dataValues);
+    volunteer = volunteer.map((item) => converter(item.dataValues));
+    user = converter(user.dataValues);
+    delete user.password;
+    panel = converter(panel.dataValues);
+    panel = { ...panel, ...user };
+    panel.Volunteer = volunteer;
     return res.status(200).send(panel);
   } catch (e) {
     await t.rollback();
@@ -71,23 +94,20 @@ exports.updatePanel = async (req, res) => {
   let volunteer = [];
   let t = await sequelize.transaction();
   try {
-    panel = await Panel.update(
-      req.body,
-      {
-        where: { panelID: req.params.panelId },
-        returning: true,
-        transaction: t,
-      }
-    );
+    panel = await Panel.update(req.body, {
+      where: { panelID: req.params.panelId },
+      returning: true,
+      transaction: t,
+    });
     if (req.body.hasOwnProperty("Volunteer")) {
-      volunteer = await PanelVolunteer.bulkCreate(req.body.Volunteer, {
+      volunteer = await VolunteerPanel.bulkCreate(req.body.Volunteer, {
         ignoreDuplicates: true,
         transaction: t,
       });
     }
     await t.commit();
     panel = await Panel.findOne({ where: { panelID: req.params.panelId } });
-    // Panel = converter(Panel.dataValues)
+    panel = converter(panel.dataValues);
     return res.status(200).send(panel);
   } catch (e) {
     await t.rollback();

@@ -25,6 +25,26 @@ router.post('/', InterviewController.createInterview);
  */
 router.delete('/:interviewId', InterviewController.deleteInterview);
 
+/**
+ * @description get all Interviews
+ */
+router.get('/volunteer/:panelId', InterviewController.getInterviewsOfAssignedPanel);
+
+/**
+ * @description get all Interviews
+ */
+router.put('/volunteer/:interviewId', InterviewController.updateInterviewOfAssignedPanel);
+
+/**
+ * @description get all Interviews
+ */
+router.put('/panel/:interviewId', InterviewController.updateAssignedInterview);
+
+/**
+ * @description get all Interviews
+ */
+router.get('/panel/:panelId', InterviewController.getAssignedInterviews);
+
 
 router.all('*', (req, res) => {
 	res.status(404).json({ status: 404, message: 'Not found' });
