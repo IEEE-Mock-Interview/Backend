@@ -18,6 +18,20 @@ exports.getUsers = async (req, res) => {
 };
 
 /**
+ *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}> 
+ */
+exports.getVolunteers = async (req, res) => {
+	let users = [];
+	try {
+		users = await User.findAll({ where: {role:'Volunteer'} , attributes: { exclude: 'password' } });
+		users = users.map(item => converter(item.dataValues))
+		return res.status(200).send(users);
+	} catch (e) {
+		return res.status(400).send(e.message);
+	}
+};
+
+/**
  * @description Auto generates a password and send it to users mail
  *@returns Object 
  */

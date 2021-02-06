@@ -1,3 +1,4 @@
+const sequelize = require("../database/connection");
 const Interview = require("../models/interview.model");
 const Interviewee = require("../models/interviewee.model");
 const converter = require('../util/converter')
@@ -67,17 +68,37 @@ exports.createInterview = async (req, res) => {
 
 exports.updateInterview = async (req, res) => {
   let interview = {};
+  let t = await sequelize.transaction()
   try {
+    if(req.body.hasOwnProperty("state")){
+      interview = await Interview.findOne({
+        where: { interviewID: req.params.interviewId },
+      });
+      let updateVal = interview.state == 'Ongoing' ? 0:1;
+      if(interview.state == 'Not Started' && req.body.state == 'Ongoing'){
+          updateVal = 0;
+      }
+      else if(interview.state == 'Ongoing' && req.body.state == 'Completed'){
+          updateVal = 1;
+      }
+      interviewee = await Interviewee.update(
+        {availability : updateVal},
+        { where: { intervieweeID: req.body.intervieweeID }, returning: true, transaction:t }
+      );
+    }
+   
     interview = await Interview.update(
       req.body,
-      { where: { interviewID: req.params.interviewId }, returning: true }
+      { where: { interviewID: req.params.interviewId }, returning: true, transaction:t }
     );
+    await t.commit();
     interview = await Interview.findOne({
       where: { interviewID: req.params.interviewId },
     });
     interview = converter(interview.dataValues)
     return res.status(200).send(interview);
   } catch (e) {
+    await t.rollback();
     return res.status(400).send(e.message);
   }
 };

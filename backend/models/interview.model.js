@@ -6,14 +6,14 @@ const Interviewee = require('./interviewee.model');
 const Interview = sequelize.define(
 	'Interview',
 	{
-        InterviewID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        interviewID: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
 		panelID:  DataTypes.INTEGER ,
         intervieweeID: DataTypes.TEXT,
         date: DataTypes.DATEONLY,
         time: DataTypes.TIME,
         state: {
             type: DataTypes.ENUM,
-            values: ['Not Commenced','Ongoing','Completed']
+            values: ['Not Started','Ongoing','Completed']
         },
         feedback: DataTypes.TEXT
 	},

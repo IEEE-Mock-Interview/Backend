@@ -7,6 +7,13 @@ const config = {
     dbName: process.env.DATABASE,
     password: process.env.PASSWORD,
   },
+  mail:{
+    clinetID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLEINT_SECRET,
+    redirectUri: process.env.REDIRECT_URI,
+    refreshToken: process.env.REFRESH_TOKEN,
+  }
 };
+
 
 module.exports = config;

@@ -47,7 +47,9 @@ CREATE TABLE `Interviewee` (
   `name` varchar(100),
   `email` varchar(50) NOT NULL UNIQUE,
   `contactNo` varchar(10),
+  `dept` varchar(50),
   `cv` varchar(200),
+  `availability` BOOLEAN,
   `intervieweeImg` varchar(255),
   PRIMARY KEY (`intervieweeID`)
 );

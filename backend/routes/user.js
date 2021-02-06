@@ -10,6 +10,13 @@ router.get('/', UserController.getUsers);
 /**
 
 /**
+ * @description get all volunteers
+ */
+router.get('/volunteer', UserController.getVolunteers);
+
+/**
+
+/**
  * @description update user
  */
 router.put('/:userId', UserController.updateUser);

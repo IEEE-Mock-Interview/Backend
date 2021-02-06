@@ -3,6 +3,11 @@ const PanelController = require('../controllers/panel.controller')
 const router = express.Router();
 
 /**
+ * @description get all panels
+ */
+router.get('/', PanelController.getAllPanels);
+
+/**
  * @description get all companies
  */
 router.get('/:companyId', PanelController.getPanels);
