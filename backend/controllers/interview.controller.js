@@ -23,7 +23,7 @@ exports.getInterviews = async (req, res) => {
 exports.getInterviewsOfAssignedPanel = async (req, res) => {
   let interviews = [];
   try {
-    interviews = await Interview.findAll({attributes:{exclude:'feedback'}, where:{panelID: req.params.panelID}, include:{model:Interviewee}});
+    interviews = await Interview.findAll({attributes:{exclude:'feedback'}, where:{panelID: req.params.panelId}, include:{model:Interviewee}});
     interviews = interviews.map(item => converter(item.dataValues))
     return res.status(200).send(interviews);
   } catch (e) {
@@ -37,7 +37,7 @@ exports.getInterviewsOfAssignedPanel = async (req, res) => {
 exports.getAssignedInterviews = async (req, res) => {
   let interviews = [];
   try {
-    interviews = await Interview.findAll({where:{panelID: req.params.panelID}, include:{model:Interviewee}});
+    interviews = await Interview.findAll({where:{panelID: req.params.panelId}, include:{model:Interviewee}});
     interviews = interviews.map(item => converter(item.dataValues))
     return res.status(200).send(interviews);
   } catch (e) {
