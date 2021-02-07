@@ -48,7 +48,7 @@ exports.updateCompany = async (req, res) => {
 		company = await Company.update({ ...req.body}, { where: { companyID: req.params.companyId }, returning: true });
 		company = await Company.findOne({where: { companyID: req.params.companyId }});
 		company = converter(company.dataValues)
-		let io = app.get('socket');
+		let io = req.app.get('socket');
 		io.to('admin').emit('company','update',company);
 		return res.status(200).send(company);
 	} catch (e) {
