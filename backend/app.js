@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const assert = require('assert');
+var cors = require('cors');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/user');
 var companyRouter = require('./routes/company');
@@ -11,11 +12,14 @@ var panelRouter = require('./routes/panel');
 var intervieweeRouter = require('./routes/interviewee');
 var interviewRouter = require('./routes/interview');
 const authenticate = require('./middleware/authenticate')
+const WebSockets = require('./util/websockets')
 var app = express();
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -48,4 +52,9 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+io.on('connection', WebSockets.default.connection);
+app.set("socket",io);
+
+module.exports = {app:app, server:server};

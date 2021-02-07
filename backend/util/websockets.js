@@ -1,6 +1,8 @@
 class WebSockets {
-    users = [];
     connection(client) {
+      console.log("Client connected");
+      console.log(client.id);
+      users = [];
       // event fired when the chat room is disconnected
       client.on("disconnect", () => {
         this.users = this.users.filter((user) => user.socketId !== client.id);
@@ -36,4 +38,4 @@ class WebSockets {
     }
   }
   
-  export default new WebSockets();
+  exports.default =  new WebSockets();
