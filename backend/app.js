@@ -1,5 +1,6 @@
 var createError = require('http-errors');
 var express = require('express');
+var cors = require('cors');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -28,13 +29,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-app.use('/', indexRouter);
+app.use('/',cors(), indexRouter);
 // app.use(authenticate.verifyUser)
-app.use('/users', usersRouter);
-app.use('/company', companyRouter);
-app.use('/panel', panelRouter);
-app.use('/interviewee', intervieweeRouter);
+app.use('/users',cors(), usersRouter);
+app.use('/company',cors(), companyRouter);
+app.use('/panel',cors(), panelRouter);
+app.use('/interviewee',cors(), intervieweeRouter);
 app.use('/interview', interviewRouter);
+
+app.use(cors())
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -52,6 +55,11 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+app.listen(80, function () {
+  console.log('CORS-enabled web server listening on port 80')
+})
+
+module.exports = app;
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 io.on('connection', WebSockets.default.connection);
