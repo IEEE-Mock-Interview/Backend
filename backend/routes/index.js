@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
 			}
 			res.statusCode = 200;
 			res.setHeader('Content-Type', 'application/json');
-			return res.status(200).send({ success: success, token: token, type: user.role, panelID:panelID });
+			return res.status(200).send({ success: success, token: token, type: user.role, panelID:panelID, userID:user.id });
 		} catch (error) {
 			return res.status(400).send(error.message);
 		}
