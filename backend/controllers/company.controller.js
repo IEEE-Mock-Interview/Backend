@@ -26,6 +26,8 @@ exports.createCompany = async (req, res) => {
 	try {
 		company = await Company.create({...req.body});
 		company = converter(company.dataValues);
+		let io = req.app.get('socket');
+		io.to('admin').emit('company','add',company);
 		return res
 			.status(200)
 			.send(company);
@@ -46,6 +48,8 @@ exports.updateCompany = async (req, res) => {
 		company = await Company.update({ ...req.body}, { where: { companyID: req.params.companyId }, returning: true });
 		company = await Company.findOne({where: { companyID: req.params.companyId }});
 		company = converter(company.dataValues)
+		let io = app.get('socket');
+		io.to('admin').emit('company','update',company);
 		return res.status(200).send(company);
 	} catch (e) {
 		return res.status(400).send(e.message);
@@ -57,6 +61,8 @@ exports.updateCompany = async (req, res) => {
 exports.deleteCompany = async (req, res) => {
 	try {
 		await Company.destroy({ where: { companyID: req.params.companyId } });
+		let io = req.app.get('socket');
+		io.to('admin').emit('company','delete',{id:req.params.companyId});
 		return res.status(200).send('Company succesfully deleted');
 	} catch (e) {
 		return res.status(400).send(e.message);
