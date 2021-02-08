@@ -3,6 +3,7 @@ var router = express.Router();
 var passport = require('passport');
 var authenticate = require('../middleware/authenticate');
 const Panel = require('../models/panel.model');
+const VolunteerPanel = require('../models/voluteerpanel.model');
 const converter = require('../util/converter');
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -26,12 +27,15 @@ router.post('/', async (req, res) => {
 				success = false;
 				return res.status(200).send("Password incorrect");
 			}else{
-				if(user.role == "Panel"){
-					panel = await Panel.findOne({where:{userID:user.id}});
+				if(user.role.toLowerCase() == "panel"){
+					let panel = await Panel.findOne({where:{userID:user.id}});
 					if(panel){
 						panelID = panel.panelID;
-
 					}
+				}
+				else if(user.role.toLowerCase() == "volunteer"){
+					panelID = await VolunteerPanel.findAll({where:{volunteerID:user.id}})
+					panelID = panelID.map(item => item.panelID)
 				}
 			}
 			res.statusCode = 200;
