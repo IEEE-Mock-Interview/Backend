@@ -3,8 +3,9 @@ const { google } = require('googleapis')
 const config  = require('../config/config')
 
 const service = "gmail";
-const clientMail = "poorna2152@gmail.com";
+const clientMail = config.mail.mail;
 
+console.log(clientMail);
 const oAuth2Client = new google.auth.OAuth2(
     config.mail.clinetID,
     config.mail.clientSecret,
@@ -13,19 +14,22 @@ const oAuth2Client = new google.auth.OAuth2(
 
 oAuth2Client.setCredentials({ refresh_token: config.mail.refreshToken });
 
-const sendMail = (subject, text, to) => {
+const sendMail = async (subject, text, to) => {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
         const transport = nodemailer.createTransport({
           service: service,
           auth: {
-            type: 'OAuth2',
+            type: "OAuth2",
             user: clientMail,
             clientId: config.mail.clinetID,
             clientSecret: config.mail.clientSecret,
             refreshToken: config.mail.refreshToken,
             accessToken: accessToken,
           },
+          tls: {
+            rejectUnauthorized: false
+        }
         });
     
         const mailOptions = {

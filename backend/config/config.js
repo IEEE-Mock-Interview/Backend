@@ -12,6 +12,7 @@ const config = {
     clientSecret: process.env.CLEINT_SECRET,
     redirectUri: process.env.REDIRECT_URI,
     refreshToken: process.env.REFRESH_TOKEN,
+    mail: process.env.MAIL,
   }
 };
 

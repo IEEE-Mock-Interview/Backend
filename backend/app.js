@@ -55,11 +55,10 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-app.listen(80, function () {
-  console.log('CORS-enabled web server listening on port 80')
-})
+// app.listen(80, function () {
+//   console.log('CORS-enabled web server listening on port 80')
+// })
 
-module.exports = app;
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 io.on('connection', WebSockets.default.connection);

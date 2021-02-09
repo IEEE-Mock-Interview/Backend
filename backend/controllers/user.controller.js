@@ -2,6 +2,8 @@ const User = require('../models/user.model')
 const bcrypt = require('bcrypt');
 var generator = require('generate-password');
 const converter = require('../util/converter')
+const sendMail = require('../services/mailer')
+const sequelize = require('../database/connection');
 
 /**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}> 
@@ -37,6 +39,7 @@ exports.getVolunteers = async (req, res) => {
  */
 exports.createUser = async (req, res) => {
 	let user = req.body;
+	let t = await sequelize.transaction();
 	try {
 		let password = generator.generate({
 			length: 10,
@@ -45,13 +48,16 @@ exports.createUser = async (req, res) => {
         console.log(password);
 		let salt = await bcrypt.genSalt(10);
 		user.password = await bcrypt.hash(password, salt);
-		user = await User.create(user);
+		user = await User.create(user,{transaction:t});
 		user = converter(user.dataValues);
-		// sendMail("SLF New User Password",password,user.email)
+		await sendMail("IEEE Mock Interview Account", password,user.email)
+		// console.log(mail);
+		await t.commit();
 		return res
 			.status(200)
 			.send({ ...user, password: password });
 	} catch (e) {
+		await t.rollback();
 		return res.status(400).send({ status: 400, message: e.message });
 	}
 };

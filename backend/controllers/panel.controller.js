@@ -5,7 +5,7 @@ const VolunteerPanel = require('../models/voluteerpanel.model');
 const bcrypt = require('bcrypt');
 var generator = require('generate-password');
 const converter = require('../util/converter');
-
+const sendMail =  require('../services/mailer');
 /**
  * make this to get volunteer details also
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
@@ -88,7 +88,10 @@ exports.createPanel = async (req, res) => {
 				transaction: t,
 			});
 		}
+		await sendMail("IEEE Mock Interview Account", password,user.email)
+		 
 		await t.commit();
+
 		volunteer = volunteer.map((item) => converter(item.dataValues));
 		user = converter(user.dataValues);
 		delete user.password;
