@@ -2,7 +2,7 @@ const sequelize = require('../database/connection');
 const {DataTypes} = require('sequelize')
 const User = require('./user.model');
 const Company = require('./company.model');
-
+// const VolunteerPanel = require('./voluteerpanel.model');
 const Panel = sequelize.define(
 	'Panel',
 	{
@@ -16,6 +16,7 @@ const Panel = sequelize.define(
 
 Panel.belongsTo(User,{foreignKey:'userID'})
 Panel.belongsTo(Company,{foreignKey:'companyID'})
+// Panel.hasMany(VolunteerPanel,{foreignKey:'panelID'})
 module.exports = Panel;
 
 
