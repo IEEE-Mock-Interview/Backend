@@ -88,7 +88,7 @@ exports.createPanel = async (req, res) => {
 				transaction: t,
 			});
 		}
-		await sendMail("IEEE Mock Interview Account", password,user.email)
+		// await sendMail("IEEE Mock Interview Account", password,user.email)
 		 
 		await t.commit();
 
@@ -98,6 +98,8 @@ exports.createPanel = async (req, res) => {
 		panel = converter(panel.dataValues);
 		panel = { ...panel, ...user };
 		panel.Volunteer = volunteer;
+		let io = req.app.get('socket');
+		io.in("admin").emit('panel','post',panel);
 		return res.status(200).send(panel);
 	} catch (e) {
 		await t.rollback();
@@ -114,7 +116,7 @@ exports.updatePanel = async (req, res) => {
 	let panel = {};
 	let volunteer = [];
 	let t = await sequelize.transaction();
-	try {
+	// try {
 		panel = await Panel.update(req.body, {
 			where: { panelID: req.params.panelId },
 			returning: true,
@@ -128,12 +130,15 @@ exports.updatePanel = async (req, res) => {
 		}
 		await t.commit();
 		panel = await Panel.findOne({ where: { panelID: req.params.panelId } });
+		console.log(panel);
 		panel = converter(panel.dataValues);
+		let io = req.app.get('socket');
+		io.in('admin').emit('panel','put',panel);
 		return res.status(200).send(panel);
-	} catch (e) {
-		await t.rollback();
-		return res.status(400).send(e.message);
-	}
+	// } catch (e) {
+	// 	await t.rollback();
+	// 	return res.status(400).send(e.message);
+	// }
 };
 /**
  * @returns success or error message
@@ -141,7 +146,9 @@ exports.updatePanel = async (req, res) => {
 exports.deletePanel = async (req, res) => {
 	try {
 		await Panel.destroy({ where: { panelID: req.params.panelId } });
-		return res.status(200).send('Panel succesfully deleted');
+		let io = req.app.get('socket');
+		io.in("admin").emit('panel','delete',{id:req.params.panelId});
+		return res.status(200).send('Panel succesfully deleted'); 
 	} catch (e) {
 		return res.status(400).send(e.message);
 	}

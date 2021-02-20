@@ -50,9 +50,11 @@ exports.createUser = async (req, res) => {
 		user.password = await bcrypt.hash(password, salt);
 		user = await User.create(user,{transaction:t});
 		user = converter(user.dataValues);
-		await sendMail("IEEE Mock Interview Account", password,user.email)
+		// await sendMail("IEEE Mock Interview Account", password,user.email)
 		// console.log(mail);
 		await t.commit();
+		let io = req.app.get('socket');
+		io.in("admin").emit('user','post',user);		
 		return res
 			.status(200)
 			.send({ ...user, password: password });
@@ -74,6 +76,8 @@ exports.updateUser = async (req, res) => {
 		user = await User.update({ ...req.body}, { where: { id: req.params.userId }, returning: true });
 		user = await User.findOne({ attributes:{exclude:'password'},where: { id: req.params.userId }});
 		user = converter(user.dataValues)
+		let io = req.app.get('socket');
+		io.in("admin").emit('user','put',user);	
 		return res.status(200).send(user);
 	} catch (e) {
 		return res.status(400).send(e.message);
@@ -85,6 +89,8 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
 	try {
 		await User.destroy({ where: { id: req.params.userId } });
+		let io = req.app.get('socket');
+		io.in("admin").emit('user','delete',{id:req.params.userId});	
 		return res.status(200).send('User succesfully deleted');
 	} catch (e) {
 		return res.status(400).send(e.message);

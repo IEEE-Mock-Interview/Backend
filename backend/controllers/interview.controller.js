@@ -46,19 +46,30 @@ exports.getAssignedInterviews = async (req, res) => {
 };
 
 /**
- * @description Auto generates a password and send it to Interviews mail
+ * @description Create a new interview
+ * @description Socket message: Admin room,only to panel and volunteer 
  *@returns Object
  */
 exports.createInterview = async (req, res) => {
   let interview = req.body;
-  try {
+  // try {
     interview = await Interview.create(req.body);
     interview = converter(interview.dataValues);
-    // sendMail("SLF New Interview Password",password,Interview.email)
+
+    let io = req.app.get('socket');
+		io.in("admin").emit('interview','post',interview);
+    let volunteerRoom = io.sockets.adapter.rooms.get('volunteer')
+    let panelRoom = io.sockets.adapter.rooms.get('panel')
+    console.log(Array.from(io.sockets.adapter.nsp.sockets));
+    let volSocket = Array.from(io.sockets.adapter.nsp.sockets).find(item => volunteerRoom.includes(item.id) && item.panelID == interview.panelID)
+    let panelSocket = io.sockets.adapter.nsp.sockets.find(item => panelRoom.includes(item.id) && item.panelID == interview.panelID)
+    io.to(volSocket.id).emit('interview','post',interview);
+		io.to(panelSocket.id).emit('interview','put',interview);
+
     return res.status(200).send(interview);
-  } catch (e) {
-    return res.status(400).send({ status: 400, message: e.message });
-  }
+  // } catch (e) {
+  //   return res.status(400).send({ status: 400, message: e.message });
+  // }
 };
 
 /**
@@ -102,6 +113,7 @@ exports.updateInterview = async (req, res) => {
     return res.status(400).send(e.message);
   }
 };
+
 /**
  * @param {Object} req: req.body: Any attribute excluding password
  *@returns Object{officerID, name, role, stationID, stationName, location, type, contactNo}
@@ -111,13 +123,15 @@ exports.updateAssignedInterview = async (req, res) => {
   let interview = {};
   try {
     interview = await Interview.update(
-      req.body,
+      {state: req.body.state},
       { where: { interviewID: req.params.interviewId }, returning: true }
     );
     interview = await Interview.findOne({
       where: { interviewID: req.params.interviewId },
     });
     interview = converter(interview.dataValues)
+    let io = req.app.get('socket');
+		io.in("volunteer-panel").emit('interview','put',interview);
     return res.status(200).send(interview);
   } catch (e) {
     return res.status(400).send(e.message);

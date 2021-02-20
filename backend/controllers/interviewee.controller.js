@@ -24,6 +24,8 @@ exports.createInterviewee = async (req, res) => {
   try {
     interviewee = await Interviewee.create(req.body);
     interviewee = converter(interviewee.dataValues);
+    let io = req.app.get('socket');
+		io.in("admin").emit('interviewee','post',interviewee);
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send({ status: 400, message: e.message });
@@ -46,6 +48,28 @@ exports.updateInterviewee = async (req, res) => {
       where: { intervieweeID: req.params.intervieweeId },
     });
     interviewee = converter(interviewee.dataValues)
+    let io = req.app.get('socket');
+		io.in("admin").emit('interviewee','put',interviewee);
+    return res.status(200).send(interviewee);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
+};
+
+exports.updateIntervieweeVolunteer = async (req, res) => {
+  let interviewee = {};
+  try {
+    interviewee = await Interviewee.update(
+      {availability: req.body.availability},
+      { where: { intervieweeID: req.params.intervieweeId }, returning: true }
+    );
+    interviewee = await Interviewee.findOne({
+      where: { intervieweeID: req.params.intervieweeId },
+    });
+    interviewee = converter(interviewee.dataValues)
+    let io = req.app.get('socket');
+		io.in("admin").emit('interviewee','put',interviewee);
+		io.in("volunteer-panel").emit('interviewee','put',interviewee);
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send(e.message);
@@ -57,6 +81,8 @@ exports.updateInterviewee = async (req, res) => {
 exports.deleteInterviewee = async (req, res) => {
   try {
     await Interviewee.destroy({ where: { intervieweeID: req.params.intervieweeId } });
+    let io = req.app.get('socket');
+		io.in("admin").emit('interviewee','delete',{id:req.params.intervieweeId});
     return res.status(200).send("Interviewee succesfully deleted");
   } catch (e) {
     return res.status(400).send(e.message);
