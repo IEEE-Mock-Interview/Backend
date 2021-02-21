@@ -56,15 +56,15 @@ exports.createInterview = async (req, res) => {
     interview = await Interview.create(req.body);
     interview = converter(interview.dataValues);
 
-    let io = req.app.get('socket');
-		io.in("admin").emit('interview','post',interview);
-    let volunteerRoom = io.sockets.adapter.rooms.get('volunteer')
-    let panelRoom = io.sockets.adapter.rooms.get('panel')
-    console.log(Array.from(io.sockets.adapter.nsp.sockets));
-    let volSocket = Array.from(io.sockets.adapter.nsp.sockets).find(item => volunteerRoom.includes(item.id) && item.panelID == interview.panelID)
-    let panelSocket = io.sockets.adapter.nsp.sockets.find(item => panelRoom.includes(item.id) && item.panelID == interview.panelID)
-    io.to(volSocket.id).emit('interview','post',interview);
-		io.to(panelSocket.id).emit('interview','put',interview);
+    // let io = req.app.get('socket');
+		// io.in("admin").emit('interview','post',interview);
+    // let volunteerRoom = io.sockets.adapter.rooms.get('volunteer')
+    // let panelRoom = io.sockets.adapter.rooms.get('panel')
+    // console.log(Array.from(io.sockets.adapter.nsp.sockets));
+    // let volSocket = Array.from(io.sockets.adapter.nsp.sockets).find(item => volunteerRoom.includes(item.id) && item.panelID == interview.panelID)
+    // let panelSocket = Array.from(io.sockets.adapter.nsp.sockets).find(item => panelRoom.includes(item.id) && item.panelID == interview.panelID)
+    // io.to(volSocket.id).emit('interview','post',interview);
+		// io.to(panelSocket.id).emit('interview','put',interview);
 
     return res.status(200).send(interview);
   // } catch (e) {

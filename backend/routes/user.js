@@ -8,6 +8,11 @@ const router = express.Router();
 router.get('/', UserController.getUsers);
 
 /**
+ * @description get all users
+ */
+router.get('/:userId', UserController.getUser);
+
+/**
 
 /**
  * @description get all volunteers
