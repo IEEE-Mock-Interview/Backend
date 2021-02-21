@@ -128,7 +128,7 @@ exports.changePassword = async (req,res) =>{
 	password = await bcrypt.hash(password, salt);
 	try{
 		user = await User.update({password:password},{where:{id:req.params.userId}})
-		user = await User.findOne({where:{officerID:req.params.userId}})
+		user = await User.findOne({where:{id:req.params.userId}})
 		// sendMail("SLF New User Password",req.body.confirmNewPassword,user.email)
 		return res.status(200).send("Password succesfully changed")
 	} catch (e){
