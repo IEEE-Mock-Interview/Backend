@@ -25,9 +25,9 @@ exports.getUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
 	let user = {};
 	try {
-		users = await User.findOne({ where:{id:req.params.userId},attributes: { exclude: 'password' } });
-		users =  converter(user.dataValues)
-		return res.status(200).send(users);
+		user = await User.findOne({ where:{id:req.params.userId},attributes: { exclude: 'password' } });
+		user =  converter(user.dataValues)
+		return res.status(200).send(user);
 	} catch (e) {
 		return res.status(400).send(e.message);
 	}
@@ -129,7 +129,6 @@ exports.changePassword = async (req,res) =>{
 	try{
 		user = await User.update({password:password},{where:{id:req.params.userId}})
 		user = await User.findOne({where:{id:req.params.userId}})
-		// sendMail("SLF New User Password",req.body.confirmNewPassword,user.email)
 		return res.status(200).send("Password succesfully changed")
 	} catch (e){
 		return res.status(400).send(e.message)
