@@ -2,9 +2,9 @@ class WebSockets {
     users = [];
     connection(client) {
       console.log(client.id);
-      client.on("subscribe", (room,panelID = -1) => {
+      client.on("subscribe", (room,panelID = [-1]) => {
         client.join(room);
-        if(panelID != -1){
+        if(panelID[0] != -1){
           client.panelID = panelID
         }
       });

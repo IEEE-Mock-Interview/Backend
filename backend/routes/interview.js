@@ -30,10 +30,6 @@ router.delete('/:interviewId', InterviewController.deleteInterview);
  */
 router.get('/volunteer/:panelId', InterviewController.getInterviewsOfAssignedPanel);
 
-/**
- * @description get all Interviews
- */
-router.put('/volunteer/:interviewId', InterviewController.updateInterviewOfAssignedPanel);
 
 /**
  * @description get all Interviews

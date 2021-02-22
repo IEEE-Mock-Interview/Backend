@@ -15,6 +15,7 @@ exports.getInterviewees = async (req, res) => {
   }
 };
 
+
 /**
  * @description Auto generates a password and send it to Interviewees mail
  *@returns Object
@@ -33,8 +34,8 @@ exports.createInterviewee = async (req, res) => {
 };
 
 /**
- * @param {Object} req: req.body: Any attribute excluding password
- *@returns Object{officerID, name, role, stationID, stationName, location, type, contactNo}
+ * @param {Object} req: req.body: Any attribute of interviewee
+ *@returns {Object}
  */
 
 exports.updateInterviewee = async (req, res) => {
@@ -50,6 +51,7 @@ exports.updateInterviewee = async (req, res) => {
     interviewee = converter(interviewee.dataValues)
     let io = req.app.get('socket');
 		io.in("admin").emit('interviewee','put',interviewee);
+		io.in("volunteer").emit('interviewee','put',interviewee);
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send(e.message);
@@ -69,7 +71,8 @@ exports.updateIntervieweeVolunteer = async (req, res) => {
     interviewee = converter(interviewee.dataValues)
     let io = req.app.get('socket');
 		io.in("admin").emit('interviewee','put',interviewee);
-		io.in("volunteer-panel").emit('interviewee','put',interviewee);
+		io.in("volunteer").emit('interviewee','put',interviewee);
+		io.in("panel").emit('interviewee','put',interviewee);
     return res.status(200).send(interviewee);
   } catch (e) {
     return res.status(400).send(e.message);
@@ -83,6 +86,8 @@ exports.deleteInterviewee = async (req, res) => {
     await Interviewee.destroy({ where: { intervieweeID: req.params.intervieweeId } });
     let io = req.app.get('socket');
 		io.in("admin").emit('interviewee','delete',{id:req.params.intervieweeId});
+		io.in("admin").emit('volunteer','delete',{id:req.params.intervieweeId});
+		io.in("admin").emit('panel','delete',{id:req.params.intervieweeId});
     return res.status(200).send("Interviewee succesfully deleted");
   } catch (e) {
     return res.status(400).send(e.message);
