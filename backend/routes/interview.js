@@ -1,45 +1,51 @@
 const express = require('express');
 const InterviewController = require('../controllers/interview.controller')
+const {validateInterviewPost,validateInterviewPut} = require('../middleware/validator/interview.validator')
+const { ADMINVOL, ADMINPANEL} = require('../util/constants')
+const {authorize} = require('../middleware/authorize')
 const router = express.Router();
+
 
 /**
  * @description get all Interviews
  */
-router.get('/', InterviewController.getInterviews);
+router.get('/', authorize(), InterviewController.getInterviews);
 
-/**
-
-/**
- * @description update Interview
- */
-router.put('/:interviewId', InterviewController.updateInterview);
 
 /**
  * @description create Interview
  */
-router.post('/', InterviewController.createInterview);
+router.post('/', authorize(ADMINVOL), validateInterviewPost, InterviewController.createInterview);
+
+
+/**
+ * @description update Interview
+ */
+router.put('/:interviewID', authorize(ADMINPANEL), validateInterviewPut, InterviewController.updateInterview);
 
 
 /**
  * @description delete Interview
  */
-router.delete('/:interviewId', InterviewController.deleteInterview);
+router.delete('/:interviewID', authorize(ADMINVOL), InterviewController.deleteInterview);
+
+
+/**
+ * @description get all Interviews pof the volunteer
+ */
+router.get('/volunteer/:panelID', authorize(ADMINVOL), InterviewController.getInterviewsOfAssignedPanel);
+
+
+/**
+ * @description get all Interviews assigned to panel
+ */
+router.get('/panel/:panelID', authorize(ADMINPANEL), InterviewController.getAssignedInterviews);
+
 
 /**
  * @description get all Interviews
  */
-router.get('/volunteer/:panelId', InterviewController.getInterviewsOfAssignedPanel);
-
-
-/**
- * @description get all Interviews
- */
-router.put('/panel/:interviewId', InterviewController.updateAssignedInterview);
-
-/**
- * @description get all Interviews
- */
-router.get('/panel/:panelId', InterviewController.getAssignedInterviews);
+router.put('/panel/:interviewID', authorize(ADMINPANEL) ,InterviewController.updateAssignedInterview);
 
 
 router.all('*', (req, res) => {

@@ -25,7 +25,7 @@ exports.getUsers = async (req, res) => {
 exports.getUser = async (req, res) => {
 	let user = {};
 	try {
-		user = await User.findOne({ where:{id:req.params.userId},attributes: { exclude: 'password' } });
+		user = await User.findOne({ where:{id:req.params.id},attributes: { exclude: 'password' } });
 		user =  converter(user.dataValues)
 		return res.status(200).send(user);
 	} catch (e) {
@@ -87,8 +87,8 @@ exports.createUser = async (req, res) => {
 exports.updateUser = async (req, res) => {
 	let user = {};
 	try {
-		user = await User.update({ ...req.body}, { where: { id: req.params.userId }, returning: true });
-		user = await User.findOne({ attributes:{exclude:'password'},where: { id: req.params.userId }});
+		user = await User.update({ ...req.body}, { where: { id: req.params.id }, returning: true });
+		user = await User.findOne({ attributes:{exclude:'password'},where: { id: req.params.id }});
 		user = converter(user.dataValues)
 		let io = req.app.get('socket');
 		io.in("admin").emit('user','put',user);	
@@ -102,9 +102,9 @@ exports.updateUser = async (req, res) => {
  */
 exports.deleteUser = async (req, res) => {
 	try {
-		await User.destroy({ where: { id: req.params.userId } });
+		await User.destroy({ where: { id: req.params.id } });
 		let io = req.app.get('socket');
-		io.in("admin").emit('user','delete',{id:req.params.userId});	
+		io.in("admin").emit('user','delete',{id:req.params.id});	
 		return res.status(200).send('User succesfully deleted');
 	} catch (e) {
 		return res.status(400).send(e.message);
@@ -127,8 +127,8 @@ exports.changePassword = async (req,res) =>{
 	let salt = await bcrypt.genSalt(10);
 	password = await bcrypt.hash(password, salt);
 	try{
-		user = await User.update({password:password},{where:{id:req.params.userId}})
-		user = await User.findOne({where:{id:req.params.userId}})
+		user = await User.update({password:password},{where:{id:req.params.id}})
+		user = await User.findOne({where:{id:req.params.userID}})
 		return res.status(200).send("Password succesfully changed")
 	} catch (e){
 		return res.status(400).send(e.message)

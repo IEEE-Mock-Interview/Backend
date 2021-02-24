@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 			if (err || !user) {
 				return res.status(200).send({ success: false, status: 'Unauthorized!' });
 			}
-			var token = authenticate.getToken({ userID: user.id  });
+			var token = authenticate.getToken({ userID: user.id , role: user.role });
 			console.log(user);
 			let success = true;
 			if (!token) {

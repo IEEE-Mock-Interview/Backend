@@ -14,7 +14,7 @@ exports.getPanels = async (req, res) => {
 	let panels = [];
 	try {
 		panels = await Panel.findAll({
-			where: { companyID: req.params.companyId },
+			where: { companyID: req.params.companyID },
 			include: { model: User, attributes: { exclude: ['password'] } },
 		});
 		panels = panels.map((item) => converter(item.dataValues));
@@ -118,7 +118,7 @@ exports.updatePanel = async (req, res) => {
 	let t = await sequelize.transaction();
 	// try {
 		panel = await Panel.update(req.body, {
-			where: { panelID: req.params.panelId },
+			where: { panelID: req.params.panelID },
 			returning: true,
 			transaction: t,
 		});
@@ -129,7 +129,7 @@ exports.updatePanel = async (req, res) => {
 			});
 		}
 		await t.commit();
-		panel = await Panel.findOne({ where: { panelID: req.params.panelId } });
+		panel = await Panel.findOne({ where: { panelID: req.params.panelID } });
 		console.log(panel);
 		panel = converter(panel.dataValues);
 		let io = req.app.get('socket');
@@ -145,9 +145,9 @@ exports.updatePanel = async (req, res) => {
  */
 exports.deletePanel = async (req, res) => {
 	try {
-		await Panel.destroy({ where: { panelID: req.params.panelId } });
+		await Panel.destroy({ where: { panelID: req.params.panelID } });
 		let io = req.app.get('socket');
-		io.in("admin").emit('panel','delete',{id:req.params.panelId});
+		io.in("admin").emit('panel','delete',{id:req.params.panelID});
 		return res.status(200).send('Panel succesfully deleted'); 
 	} catch (e) {
 		return res.status(400).send(e.message);

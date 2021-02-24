@@ -1,12 +1,11 @@
 const Company = require('../models/company.model');
-const Panel = require('../models/panel.model');
-const User = require('../models/user.model');
 const converter = require('../util/converter');
 
 /**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
  */
 exports.getCompanies = async (req, res) => {
+	console.log(req.user);
 	let companies = [];
 	try {
 		companies = await Company.findAll();
@@ -26,9 +25,7 @@ exports.createCompany = async (req, res) => {
 	try {
 		company = await Company.create({ ...req.body });
 		company = converter(company.dataValues);
-
 		let io = req.app.get('socket');
-		
 		io.in('admin').emit('company', 'post', company);
 		return res.status(200).send(company);
 	} catch (e) {
@@ -46,12 +43,13 @@ exports.updateCompany = async (req, res) => {
 	// try {
 		company = await Company.update(
 			{ ...req.body },
-			{ where: { companyID: req.params.companyId }, returning: true }
+			{ where: { companyID: req.params.companyID }, returning: true }
 		);
-		company = await Company.findOne({ where: { companyID: req.params.companyId } });
+		company = await Company.findOne({ where: { companyID: req.params.companyID } });
 		company = converter(company.dataValues);
 		let io = req.app.get('socket');
 		var roster = io.sockets.adapter.rooms.get('admin');
+		roster = roster == undefined ? []:Array.from(roster)
 		roster.forEach(so => {
 			console.log(io.sockets.adapter.nsp.sockets.get(so).name)
 			// console.log(io.sockets.adapter.nsp)
@@ -68,9 +66,9 @@ exports.updateCompany = async (req, res) => {
  */
 exports.deleteCompany = async (req, res) => {
 	try {
-		await Company.destroy({ where: { companyID: req.params.companyId } });
+		await Company.destroy({ where: { companyID: req.params.companyID } });
 		let io = req.app.get('socket');
-		io.emit('company', 'delete', { id: req.params.companyId });
+		io.emit('company', 'delete', { id: req.params.companyID });
 		return res.status(200).send('Company succesfully deleted');
 	} catch (e) {
 		return res.status(400).send(e.message);

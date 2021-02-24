@@ -25,7 +25,7 @@ exports.getInterviewsOfAssignedPanel = async (req, res) => {
 	try {
 		interviews = await Interview.findAll({
 			attributes: { exclude: 'feedback' },
-			where: { panelID: req.params.panelId },
+			where: { panelID: req.params.panelID },
 			include: { model: Interviewee },
 		});
 		interviews = interviews.map((item) => converter(item.dataValues));
@@ -42,7 +42,7 @@ exports.getAssignedInterviews = async (req, res) => {
 	let interviews = [];
 	try {
 		interviews = await Interview.findAll({
-			where: { panelID: req.params.panelId },
+			where: { panelID: req.params.panelID },
 			include: { model: Interviewee },
 		});
 		interviews = interviews.map((item) => converter(item.dataValues));
@@ -87,7 +87,7 @@ exports.updateInterview = async (req, res) => {
 	try {
 		if (req.body.hasOwnProperty('state')) {
 			interview = await Interview.findOne({
-				where: { interviewID: req.params.interviewId },
+				where: { interviewID: req.params.interviewID },
 			});
 			updateVal = interview.state == 'Ongoing' ? false : true;
 			if (interview.state == 'Not Started' && req.body.state == 'Ongoing') {
@@ -102,13 +102,13 @@ exports.updateInterview = async (req, res) => {
 		}
 
 		interview = await Interview.update(req.body, {
-			where: { interviewID: req.params.interviewId },
+			where: { interviewID: req.params.interviewID },
 			returning: true,
 			transaction: t,
 		});
 		await t.commit();
 		interview = await Interview.findOne({
-			where: { interviewID: req.params.interviewId },
+			where: { interviewID: req.params.interviewID },
 			attributes: { exclude: 'feedback' },
 			include: { model: Interviewee },
 		});
@@ -135,10 +135,10 @@ exports.updateAssignedInterview = async (req, res) => {
 	try {
 		interview = await Interview.update(
 			{ state: req.body.state, feedback: req.body.feedback },
-			{ where: { interviewID: req.params.interviewId }, returning: true }
+			{ where: { interviewID: req.params.interviewID }, returning: true }
 		);
 		interview = await Interview.findOne({
-			where: { interviewID: req.params.interviewId },
+			where: { interviewID: req.params.interviewID },
 			include: { model: Interviewee },
 		});
 		interview = converter(interview.dataValues);
@@ -156,9 +156,9 @@ exports.updateAssignedInterview = async (req, res) => {
  */
 exports.deleteInterview = async (req, res) => {
 	try {
-		await Interview.destroy({ where: { interviewID: req.params.interviewId } });
+		await Interview.destroy({ where: { interviewID: req.params.interviewID } });
 		let io = req.app.get('socket');
-		sendToAdminVolunteerPanel(io, 'interview', 'delete', { id: interviewId }, req.body.panelID);
+		sendToAdminVolunteerPanel(io, 'interview', 'delete', { id: req.params.interviewID }, req.body.panelID);
 		return res.status(200).send('Interview succesfully deleted');
 	} catch (e) {
 		return res.status(400).send(e.message);

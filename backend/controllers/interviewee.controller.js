@@ -15,6 +15,20 @@ exports.getInterviewees = async (req, res) => {
   }
 };
 
+/**
+ *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
+ */
+exports.getInterviewee = async (req, res) => {
+  let interviewee = {};
+  try {
+    interviewee = await Interviewee.findOne({where:{intervieweeID:req.params.intervieweeID}});
+    interviewee =  converter(interviewee.dataValues)
+    return res.status(200).send(interviewee);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
+};
+
 
 /**
  * @description Auto generates a password and send it to Interviewees mail
@@ -43,10 +57,10 @@ exports.updateInterviewee = async (req, res) => {
   try {
     interviewee = await Interviewee.update(
       req.body,
-      { where: { intervieweeID: req.params.intervieweeId }, returning: true }
+      { where: { intervieweeID: req.params.intervieweeID }, returning: true }
     );
     interviewee = await Interviewee.findOne({
-      where: { intervieweeID: req.params.intervieweeId },
+      where: { intervieweeID: req.params.intervieweeID },
     });
     interviewee = converter(interviewee.dataValues)
     let io = req.app.get('socket');
@@ -63,10 +77,10 @@ exports.updateIntervieweeVolunteer = async (req, res) => {
   try {
     interviewee = await Interviewee.update(
       {availability: req.body.availability},
-      { where: { intervieweeID: req.params.intervieweeId }, returning: true }
+      { where: { intervieweeID: req.params.intervieweeID }, returning: true }
     );
     interviewee = await Interviewee.findOne({
-      where: { intervieweeID: req.params.intervieweeId },
+      where: { intervieweeID: req.params.intervieweeID },
     });
     interviewee = converter(interviewee.dataValues)
     let io = req.app.get('socket');
@@ -83,11 +97,11 @@ exports.updateIntervieweeVolunteer = async (req, res) => {
  */
 exports.deleteInterviewee = async (req, res) => {
   try {
-    await Interviewee.destroy({ where: { intervieweeID: req.params.intervieweeId } });
+    await Interviewee.destroy({ where: { intervieweeID: req.params.intervieweeID } });
     let io = req.app.get('socket');
-		io.in("admin").emit('interviewee','delete',{id:req.params.intervieweeId});
-		io.in("admin").emit('volunteer','delete',{id:req.params.intervieweeId});
-		io.in("admin").emit('panel','delete',{id:req.params.intervieweeId});
+		io.in("admin").emit('interviewee','delete',{id:req.params.intervieweeID});
+		io.in("admin").emit('volunteer','delete',{id:req.params.intervieweeID});
+		io.in("admin").emit('panel','delete',{id:req.params.intervieweeID});
     return res.status(200).send("Interviewee succesfully deleted");
   } catch (e) {
     return res.status(400).send(e.message);

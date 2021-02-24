@@ -41,13 +41,13 @@ opts.secretOrKey = "1234567890098764321";
 exports.jwtPassport = passport.use(new JwtStrategy(opts,
     (jwt_payload, done) => {
         console.log("JWT payload: ", jwt_payload);
-        User.findOne({where:{id:jwt_payload.userID}})
+        User.findOne({where:{id:jwt_payload.userID}, attributes: {exclude:'password'}})
         .then(user => {
-            console.log(user);
             if(!user){
                 done(null,false)
             }
             else if(user){
+                user = user.hasOwnProperty('dataValues') ? user.dataValues : user
                 return done(null,user);
             }
         })

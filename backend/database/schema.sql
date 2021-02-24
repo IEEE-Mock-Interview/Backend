@@ -58,7 +58,7 @@ CREATE TABLE `Interview` (
   `interviewID` int NOT NULL AUTO_INCREMENT,
   `panelID` int,
   `intervieweeID` int,
-  `state` varchar(10),
+  `state` varchar(20),
   `date` date,
   `time` time,
   `feedback` varchar(20),
