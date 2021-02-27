@@ -2,13 +2,19 @@ const express = require('express');
 const PanelController = require('../controllers/panel.controller')
 const {validatePanelPost, validatePanelPut} = require('../middleware/validator/panel.validator')
 const {authorize} = require('../middleware/authorize');
-const { ADMINVOL } = require('../util/constants');
+const { ADMINVOL, ADMINPANEL } = require('../util/constants');
 const router = express.Router();
 
 /**
  * @description get all panels 
  */
 router.get('/', authorize() ,PanelController.getAllPanels);
+
+/**
+ * @description get all panels 
+ */
+router.get('/:panelID', authorize(ADMINPANEL) ,PanelController.getPanel);
+
 
 /**
  * @description create a panel

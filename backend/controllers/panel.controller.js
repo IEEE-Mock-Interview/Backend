@@ -43,6 +43,26 @@ exports.getAllPanels = async (req, res) => {
 };
 
 /**
+ * make this to get volunteer details also
+ *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
+ */
+exports.getPanel = async (req, res) => {
+	let panel = {};
+	try {
+		panel = await Panel.findOne({
+			where:{panelID:req.params.panelID},
+			include: { model: User, attributes: { exclude: ['password'] }},
+		});
+		if(panel){
+			panel = converter(panel.dataValues);
+		}
+		return res.status(200).send(panel);
+	} catch (e) {
+		return res.status(400).send(e.message);
+	}
+};
+
+/**
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
  */
 exports.getVolunteerPanels = async (req, res) => {
