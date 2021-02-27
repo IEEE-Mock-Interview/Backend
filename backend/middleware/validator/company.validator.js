@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const {validator, validatorWithParam} = require('./validator')
-const companyAttributes = ['companyName', 'email', 'contactNo', 'logo']
+const companyAttributes = ['companyName', 'email', 'contactNo']
 
 const updateCompanySchema = Joi.object().keys({
     companyID: Joi.number().integer().greater(0),

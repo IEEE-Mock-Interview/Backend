@@ -1,7 +1,7 @@
 const Joi = require('joi');
 const { USER_TYPES } = require('../../util/constants');
 const { validator, validatorWithParam } = require('./validator');
-const panelAttributes = ['companyID', 'name', 'email', 'contactNo', 'role'];
+const panelAttributes = ['companyID', 'name', 'email', 'contactNo'];
 
 const updatePanelSchema = Joi.object().keys({
 	id: Joi.number().integer().greater(0),
