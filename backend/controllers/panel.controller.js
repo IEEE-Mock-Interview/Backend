@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 var generator = require('generate-password');
 const converter = require('../util/converter');
 const sendMail =  require('../services/mailer');
+const Company = require('../models/company.model');
 /**
  * make this to get volunteer details also
  *@returns Array<{officerID, name, role, stationID, stationName, location, type, contactNo}>
@@ -51,7 +52,7 @@ exports.getPanel = async (req, res) => {
 	try {
 		panel = await Panel.findOne({
 			where:{panelID:req.params.panelID},
-			include: { model: User, attributes: { exclude: ['password'] }},
+			include: [{ model: User, attributes: { exclude: ['password'] }},{model:Company}],
 		});
 		if(panel){
 			panel = converter(panel.dataValues);

@@ -31,7 +31,7 @@ exports.local = passport.use(new LocalStrategy( {usernameField:"email", password
 
 exports.getToken = (user)  => {
     return jwt.sign(user, "1234567890098764321",
-        {expiresIn: 3600});
+        {expiresIn: '1h'});
 };
 
 var opts = {};
